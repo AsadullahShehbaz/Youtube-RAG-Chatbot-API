@@ -8,6 +8,7 @@ from app.core.config import settings
 import warnings
 from contextlib import asynccontextmanager
 
+
 # Suppress warnings
 warnings.filterwarnings("ignore")
 
