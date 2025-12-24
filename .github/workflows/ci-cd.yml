@@ -2,11 +2,9 @@ name: YouTube RAG CI/CD
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   ci-cd:
@@ -17,17 +15,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Set up Python
+      # 2. Set up Python (HOST ONLY FOR TESTS)
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # 3. Install dependencies + test tools
-      - name: Install dependencies
+      # 3. Install ONLY test dependencies
+      - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
           pip install pytest pytest-cov httpx
 
       # 4. Run tests
@@ -36,20 +33,29 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: pytest tests/ -v
 
-      # 5. Login to Docker Hub
+      # 5. Docker Hub Login
       - name: Docker Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 6. Build Docker image
-      
-      - name: Build Docker image
+      # 6. Free disk space (CRITICAL)
+      - name: Clean Docker
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/youtube-rag-chatbot:latest .
+          docker system prune -af
+          docker builder prune -af
 
-      # 7. Push image to Docker Hub
+      # 7. Build Docker image (BuildKit)
+      - name: Build Docker image
+        env:
+          DOCKER_BUILDKIT: 1
+        run: |
+          docker build \
+            --no-cache \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/youtube-rag-chatbot:latest .
+
+      # 8. Push image
       - name: Push Docker image
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/youtube-rag-chatbot:latest
