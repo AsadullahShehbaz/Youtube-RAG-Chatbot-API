@@ -1,0 +1,16 @@
+version: "3.13"
+
+services:
+  api:
+    image: asadullahshehbaz/youtube-rag-chatbot:latest
+    container_name: youtube-rag-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - data_volume:/app/data
+    env_file:
+      - .env
+    restart: always
+
+volumes:
+  data_volume:
