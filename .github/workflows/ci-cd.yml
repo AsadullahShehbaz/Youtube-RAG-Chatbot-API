@@ -34,29 +34,66 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: pytest tests/ -v
 
-      # 5. Docker Hub Login
-      - name: Docker Login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 6. Free disk space (CRITICAL)
-      - name: Clean Docker
-        run: |
-          docker system prune -af
-          docker builder prune -af
+# name: YouTube RAG CI/CD
 
-      # 7. Build Docker image (BuildKit)
-      - name: Build Docker image
-        env:
-          DOCKER_BUILDKIT: 1
-        run: |
-          docker build \
-            --no-cache \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/youtube-rag-chatbot:latest .
+# on:
+#   push:
+#     branches: [ master ]
+#   pull_request:
+#     branches: [ master ]
 
-      # 8. Push image
-      - name: Push Docker image
-        run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/youtube-rag-chatbot:latest
+# jobs:
+#   ci-cd:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # 1. Checkout code
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       # 2. Set up Python (HOST ONLY FOR TESTS)
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.11"
+
+#       # 3. Install ONLY test dependencies
+#       - name: Install test dependencies
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install --no-cache-dir -r requirements.txt
+#           pip install pytest pytest-cov httpx
+
+#       # 4. Run tests
+#       - name: Run tests
+#         env:
+#           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+#         run: pytest tests/ -v
+
+#       # 5. Docker Hub Login
+#       - name: Docker Login
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+#       # 6. Free disk space (CRITICAL)
+#       - name: Clean Docker
+#         run: |
+#           docker system prune -af
+#           docker builder prune -af
+
+#       # 7. Build Docker image (BuildKit)
+#       - name: Build Docker image
+#         env:
+#           DOCKER_BUILDKIT: 1
+#         run: |
+#           docker build \
+#             --no-cache \
+#             -t ${{ secrets.DOCKERHUB_USERNAME }}/youtube-rag-chatbot:latest .
+
+#       # 8. Push image
+#       - name: Push Docker image
+#         run: |
+#           docker push ${{ secrets.DOCKERHUB_USERNAME }}/youtube-rag-chatbot:latest

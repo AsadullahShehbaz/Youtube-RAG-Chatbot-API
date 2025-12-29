@@ -7,7 +7,7 @@ from app.api.routes import router
 from app.core.config import settings
 import warnings
 from contextlib import asynccontextmanager
-
+from app.core.logging_config import logger
 
 # Suppress warnings
 warnings.filterwarnings("ignore")
@@ -16,11 +16,10 @@ warnings.filterwarnings("ignore")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
-    print(f"Starting {settings.APP_TITLE} v{settings.APP_VERSION}")
-    print(f"Docs available at: http://localhost:8000/docs")
+    logger.info(f"Starting {settings.APP_TITLE} v{settings.APP_VERSION}")
     yield
     # Shutdown logic
-    print("Shutting down application...")
+    logger.info("Shutting down application...")
 
 # Create FastAPI app with lifespan
 app = FastAPI(
@@ -41,9 +40,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+logger.debug("CORS middleware configured with allow_origins='*'")
+
 # Include routers
 app.include_router(router)
+logger.info("API routes included successfully")
 
 if __name__ == "__main__":
     import uvicorn
+    logger.info("Launching Uvicorn server on host=0.0.0.0 port=8000")
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

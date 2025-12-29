@@ -42,6 +42,7 @@ wheels/
 *.swo
 *~
 .DS_Store
+experiments
 
 # Environment variables
 .env

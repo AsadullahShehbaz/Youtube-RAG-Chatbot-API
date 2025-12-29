@@ -503,7 +503,7 @@ else:
 
 # Chat input at the bottom
 user_input = st.chat_input("Type your message here...", key="chat_input")
-
+print(f"User Input : {user_input}")
 # =============================
 # HANDLE USER INPUT
 # =============================
@@ -530,7 +530,7 @@ if user_input:
                     
                     # Display assistant message
                     st.markdown(answer)
-                    
+                    print(f"Answer : {answer}")
                     # Add to session state
                     st.session_state.messages.append({
                         "role": "assistant",
